@@ -1,4 +1,4 @@
-import FXLMS
+from FXLMS import FXLMS
 import random
 
 
@@ -9,7 +9,7 @@ class WienerFilter:
 		self.a = []
 		random.seed()
 		for n in range(N):
-			self.a.append(random.randint(-1, 1))
+			self.a.append(random.randint(1, 2))
 		return
 
 	def getOutput(self, inp):
@@ -19,7 +19,7 @@ class WienerFilter:
 			for i in range(self.N):
 				if n > i:
 					temp = temp - output[n - i - 1] * self.a[self.N - i - 1]
-			output.append((-inp[n] + temp) / self.a[self.N])
+			output.append((-inp[n] + temp) / self.a[self.N-1])
 		return output
 
 	def updateCoefs(self, signal, error):
