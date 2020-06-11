@@ -28,8 +28,8 @@ def main():
 	test = []
 	for i in range(len(x_n)):
 		test.append(x_n[i]-y_n[i])
-	plt.plot(test)
-	#plt.plot(y_n)
+	#plt.plot(test)
+	plt.plot(y_n)
 	plt.show()
 
 
