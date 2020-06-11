@@ -5,11 +5,14 @@ import random
 class WienerFilter:
 	def __init__(self, N):
 		self.N = N
-		self.fxlms = FXLMS(0.5, N)
+		self.fxlms = FXLMS(1e-3, N)
 		self.a = []
 		random.seed()
 		for n in range(N):
-			self.a.append(random.randint(1, 2))
+			if n != N-1:
+				self.a.append(0)
+			else:
+				self.a.append(10)
 		return
 
 	def getOutput(self, inp):

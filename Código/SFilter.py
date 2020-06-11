@@ -7,7 +7,7 @@ class SFilter:
 		self.L = L
 		random.seed()
 		for i in range(L):
-			self.Num.append(random.randint(1, 2))
+			self.Num.append(0.5)
 		return
 
 	def getOutput(self, inp):
@@ -18,7 +18,7 @@ class SFilter:
 				if n >= i:
 					temp = temp + self.Num[self.L - i -1] * inp[n - i]
 			output.append(temp)
-		return output
+		return inp
 
 	def detCoefs(self):
 		return self.Num
