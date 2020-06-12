@@ -1,14 +1,15 @@
 class FXLMS:
-	def __init__(self, alpha, N):
+	def __init__(self, alpha):
 		self.alpha = alpha
-		self.N = N
 		return
 
-	def calcNewCoef(self, prevCoefs, signal, error):
-		newCoefs = []
-		#if len(prevCoefs) != len(signal) or len(signal) != len(
-		#		error):  # Creo que prevCoefs deberia ser de 1+len(signal), CHEQUEAR
-		#	raise NameError('Las longitudes de signal, error y prevCoefs no coinciden')
-		for i in range(len(prevCoefs)):
-			newCoefs.append(prevCoefs[i] + self.alpha * 2 * error * signal)
-		return newCoefs
+	def calcNewCoef(self, a_n, signal, error_n):
+		a_n1 = []
+		if len(a_n) != len(signal):  # Creo que prevCoefs deberia ser de 1+len(signal), CHEQUEAR
+			raise NameError('Las longitudes de signal  a_n no coinciden')
+		for i in range(len(a_n)):
+			a_n1.append(0)
+
+		for i in range(len(a_n)):
+			a_n1[i] = a_n[i] + 2 * self.alpha * signal[i] * error_n
+		return a_n1

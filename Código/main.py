@@ -8,7 +8,7 @@ def main():
 	x_n = []
 	y_n = []
 	for i in range(100000):
-		x_n.append(np.sin(2 * 3.1419 * 1000 * i))
+		x_n.append(np.sin(2 * 3.1419* 100 * i /44e3))
 	wfilter = WienerFilter(10)
 	sfilter = SFilter(10)
 	for i in range(10000):
@@ -17,18 +17,15 @@ def main():
 			inp.append(x_n[u + i * 10])
 		outWiener = wfilter.getOutput(inp)
 		outS = sfilter.getOutput(outWiener)
-		xprim = sfilter.getOutput(inp)
-		out = []
+		error = []
 		for u in range(len(inp)):
-			out.append(inp[u] + outWiener[u])
-			y_n.append(out[u])
-			wfilter.updateCoefs(inp[u], out[u])
-	print("hola")
+			error.append(inp[u] - outS[u])
+			y_n.append(error[u])
+		wfilter.update(error)
+
+	# Ploteo la salida
+
 	plt.plot(x_n)
-	test = []
-	for i in range(len(x_n)):
-		test.append(x_n[i]-y_n[i])
-	#plt.plot(test)
 	plt.plot(y_n)
 	plt.show()
 
