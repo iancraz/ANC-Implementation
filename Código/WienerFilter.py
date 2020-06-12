@@ -39,7 +39,7 @@ class WienerFilter:
 	def __init__(self, N):  # N es el orden del filtro de wiener
 		self.N = N
 		self.a = []
-		self.fxlms = FXLMS(1e-1)
+		self.fxlms = FXLMS(1e-2)
 		self.prevValues = []
 		for i in range(self.N):
 			self.a.append(0)
@@ -61,8 +61,8 @@ class WienerFilter:
 			n_tot = n + self.N
 			for i in range(1, len(self.a)):
 				if n_tot > i:
-					temp = temp + x_tot[n_tot - i] * self.a[i]
-			y[n] = self.a[0] * x[n] + temp
+					temp = temp - x_tot[n_tot - i] * self.a[i]
+			y[n] = - self.a[0] * x[n] + temp
 		self.prevValues = []
 		for i in range(self.N):
 			self.prevValues.append(x[L - 1 - self.N + i])
