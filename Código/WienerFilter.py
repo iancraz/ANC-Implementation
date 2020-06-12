@@ -38,16 +38,6 @@ class WienerFilter:
 		signal = []
 		for i in range(len(self.prevValues)):
 			signal.append(0)
-
-		# for n in range(len(y)):
-		# 	for i in range(self.N):
-		# 		signal[i] = x_tot[n + self.N - i]
-		# 	# Cargo los valores previos para mandar al algoritmo
-		# 	# Osea para actualizar los coeficientes en n, necesito
-		# 	# x(n), x(n-1), x(n-2), ..., x(n-N), siendo M la cantidad
-		# 	# de coeficientes.
-		# 	# signal = [x(n), x(n-1), ... , x(n-N)]
-		# 	self.updateCoefs(signal, y[n])
 		return y
 
 	def updateCoefs(self, signal, error_n):
