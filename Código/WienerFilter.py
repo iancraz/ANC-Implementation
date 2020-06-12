@@ -1,4 +1,5 @@
 from FXLMS import FXLMS
+import numpy as np
 
 
 class WienerFilter:
@@ -11,22 +12,22 @@ class WienerFilter:
 
 	def getOutput(self, x):  # Recibe un input de L cantidad de valores
 		L = len(x)
-		y = [0 for i in range(len(x))]
-		x_tot = self.prevValues + x  # x_tot tiene los N valores previos a la entrada guardados
+		#y = [0 for i in range(len(x))]
+		y = np.ndarray(len(x))
+		x_tot = np.concatenate((self.prevValues, x)) # x_tot tiene los N valores previos a la entrada guardados
 		self.X = x_tot  # Guardo esto para usar en otras funciones
 		# Calculo la salida
 		# Creo que esto anda bien
-		# y(n) = a_0 x(n) + a_1 x(n-1) + ...
+		# y(n) = (-1)*(a_0 x(n) + a_1 x(n-1) + ...)
 		for n in range(len(x)):
 			temp = 0
 			n_tot = n + self.N
 			for i in range(1, len(self.a)):
 				if n_tot > i:
-					temp = temp + x_tot[n_tot - i] * self.a[i]
-			y[n] = self.a[0] * x[n] + temp
-		self.prevValues = []
+					temp = temp - x_tot[n_tot - i] * self.a[i]
+			y[n] = - self.a[0] * x[n] + temp
 		for i in range(self.N):
-			self.prevValues.append(x[L - 1 - self.N + i])
+			self.prevValues[i] = x[L - 1 - self.N + i]
 		return y
 
 	def updateCoefs(self, signal, error_n):
@@ -35,8 +36,8 @@ class WienerFilter:
 		return
 
 	def update(self, error):
-		signal = [0 for i in range(len(self.prevValues))]
-
+		#signal = [0 for i in range(len(self.prevValues))]
+		signal = np.ndarray(self.N)
 		for n in range(len(error)):
 			for i in range(self.N):
 				signal[i] = self.X[n + self.N - i]
