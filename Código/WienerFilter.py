@@ -4,19 +4,14 @@ from FXLMS import FXLMS
 class WienerFilter:
 	def __init__(self, N):  # N es el orden del filtro de wiener
 		self.N = N
-		self.a = []
+		self.a = [0 for i in range(N)]
 		self.fxlms = FXLMS(5e-2)
-		self.prevValues = []
-		for i in range(self.N):
-			self.a.append(0)
-			self.prevValues.append(0)
+		self.prevValues = [0 for i in range(N)]
 		return
 
 	def getOutput(self, x):  # Recibe un input de L cantidad de valores
 		L = len(x)
-		y = []
-		for i in range(len(x)):
-			y.append(0)
+		y = [0 for i in range(len(x))]
 		x_tot = self.prevValues + x  # x_tot tiene los N valores previos a la entrada guardados
 		self.X = x_tot  # Guardo esto para usar en otras funciones
 		# Calculo la salida
@@ -32,12 +27,6 @@ class WienerFilter:
 		self.prevValues = []
 		for i in range(self.N):
 			self.prevValues.append(x[L - 1 - self.N + i])
-
-		# Actualizo los valores de los coeficientes
-		# Todavia no esta chequeado que esto ande
-		signal = []
-		for i in range(len(self.prevValues)):
-			signal.append(0)
 		return y
 
 	def updateCoefs(self, signal, error_n):
@@ -46,9 +35,7 @@ class WienerFilter:
 		return
 
 	def update(self, error):
-		signal = []
-		for i in range(len(self.prevValues)):
-			signal.append(0)
+		signal = [0 for i in range(len(self.prevValues))]
 
 		for n in range(len(error)):
 			for i in range(self.N):
@@ -59,3 +46,4 @@ class WienerFilter:
 			# de coeficientes.
 			# signal = [x(n), x(n-1), ... , x(n-N)]
 			self.updateCoefs(signal, error[n])
+		return
