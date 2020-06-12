@@ -39,7 +39,7 @@ class WienerFilter:
 	def __init__(self, N):  # N es el orden del filtro de wiener
 		self.N = N
 		self.a = []
-		self.fxlms = FXLMS(1e-5)
+		self.fxlms = FXLMS(1e-1)
 		self.prevValues = []
 		for i in range(self.N):
 			self.a.append(0)
