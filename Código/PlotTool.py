@@ -9,12 +9,12 @@ class PlotTool:
 
 	def plot(self, x, en, fs, test= None):
 		t = np.ndarray(len(x))
-		for i in tqdm(range(len(x))):
+		for i in range(len(x)):
 			t[i] = 1 / fs * i
 		plt.grid(which='both')
 		plt.plot(t, x, 'k', label="Input")
 		plt.plot(t, en, 'r', label="Output")
-		if test != None:
+		if test is not None:
 			plt.plot(t, test, 'g', label="Test Probe")
 		plt.xlabel("Time (s)")
 		plt.ylabel("Aplitude (V)")
