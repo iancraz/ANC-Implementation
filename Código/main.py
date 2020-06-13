@@ -1,8 +1,16 @@
-from Simulation import Simulation
-from PlotTool import PlotTool
-import numpy as np
-import scipy.io.wavfile as wav
-import easygui
+import sys
+sys.path.insert(1, 'C:/Users/Ian Diaz/Desktop/TP4---Investigacion/Código')
+try:
+	from Simulation import Simulation
+	from PlotTool import PlotTool
+	import numpy as np
+	import scipy.io.wavfile as wav
+	import easygui
+except Exception as e:
+    print("\nTHERE WAS AN ERROR PROCESSING YOUR REQUEST:", e, file=sys.stderr)
+    input("Press Enter to exit...")
+import warnings
+warnings.filterwarnings("ignore")
 
 
 def main():
