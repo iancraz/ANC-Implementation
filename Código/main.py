@@ -14,6 +14,7 @@ warnings.filterwarnings("ignore")
 
 
 def main():
+	print("Choose a .wav file to simulate...")
 	orden = 10
 	fs, x = wav.read(easygui.fileopenbox())
 	showEstimation = easygui.ynbox('Do you want to see the S filter estimation?', 'S Filter Estimator', ('Yes', 'No'))
@@ -29,8 +30,12 @@ def main():
 
 	wav.write("out.wav", fs, np.array(en * 2.0 ** 15, dtype='int16'))
 	# Ploteo la salida
-	graphics = PlotTool()
-	graphics.plot(x, en, fs, test= None)
+	plotResults = easygui.ynbox('Do you want to plot the ANC Results?', 'Results', ('Yes', 'No'))
+	if plotResults:
+		graphics = PlotTool()
+		graphics.plot(x, en, fs, test= None)
+	print("Output from the ANC out.wav has been created.")
+	input("Press Enter to exit...")
 
 
 if __name__ == "__main__":
