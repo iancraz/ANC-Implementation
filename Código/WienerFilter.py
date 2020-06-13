@@ -9,8 +9,8 @@ class WienerFilter:
 		self.alpha = alpha
 		self.fxlms = FXLMS(self.alpha)
 		self.prevValues = np.zeros(N)
-		self.preXvalues = np.zeros(N)
 		self.counter = 0
+		self.X = None
 		return
 
 	def getOutput(self, x):  # Recibe un input de L cantidad de valores
@@ -42,7 +42,7 @@ class WienerFilter:
 			self.a = self.fxlms.calcNewCoef(self.a, signal, error_n, self.alpha)
 		return
 
-	def update(self, error, sfilter = None):
+	def update(self, error, sfilter=None):
 		if sfilter is not None:
 			x_tot = sfilter.getOutput(self.X)
 		else:
@@ -64,4 +64,9 @@ class WienerFilter:
 			self.alpha = self.alpha / 2.0
 		elif self.alpha:
 			self.alpha = self.alpha * 2.0
+		return
+
+	def resetPrevValues(self):
+		self.prevValues = np.zeros(self.N)
+		self.X = None
 		return

@@ -2,7 +2,7 @@ import numpy as np
 
 
 class SFilter:
-	def __init__(self, L):
+	def __init__(self):
 		self.M = 2
 		self.prevValues = np.zeros(self.M)
 		return
@@ -20,5 +20,9 @@ class SFilter:
 		for i in range(self.M):
 			self.prevValues[i] = y[len(y) - self.M + i]
 		# Si tengo y=[y1,y2,y3,y4,...,y10] agarro los ultimos M valores
-		# pej, si M = 2 entonces prevValues=[y8,y9,y10]
+		# pej, si M = 3 entonces prevValues=[y8,y9,y10]
 		return y
+
+	def resetPrevValues(self):
+		self.prevValues = np.zeros(self.M)
+		return

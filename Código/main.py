@@ -18,7 +18,6 @@ def main():
 	fs, x = wav.read(easygui.fileopenbox())
 	showEstimation = easygui.ynbox('Do you want to see the S filter estimation?', 'S Filter Estimator', ('Yes', 'No'))
 	x = x / 2.0 ** 15  # Normalizo la entrada porque esta como bytes enteros
-	print(x[0].shape)
 	if x[0].shape != ():  # Si es estereo solo agarro 1 canal
 		x = x.transpose()[0]
 	# x = np.array([0.5*np.sin(2*3.142*i * 400/44100.0) for i in range(661500)]) # Si le quiero meter una senoidal perfecta.

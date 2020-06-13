@@ -18,3 +18,7 @@ class PFilter:
 		for i in range(self.order):
 			self.prevValues[i] = x[len(x) - self.order + i]
 		return y
+
+	def resetPrevValues(self):
+		self.prevValues = np.zeros(self.order)
+		return
