@@ -12,7 +12,7 @@ class Simulation:
 		self.fs = fs
 		self.orden = order
 		self.en = np.ndarray(len(self.x))
-		self.wfilter = WienerFilter(self.orden, 1e-2)
+		self.wfilter = WienerFilter(self.orden, 1e-1)
 		self.sfilter = SFilter(self.orden)
 		self.pfilter = PFilter()
 		self.sApproxFiler = WienerFilter(self.orden, 1e-3)
@@ -32,7 +32,7 @@ class Simulation:
 			error = dn + yn
 			for u in range(len(inp)):
 				self.en[u + i * self.orden] = error[u]
-				test[u + i * self.orden] = yn[u]
+				test[u + i * self.orden] = xp[u]
 			self.wfilter.update(error, self.sApproxFiler)
 		print("Finished Simulating ANC...")
 		return self.en, test

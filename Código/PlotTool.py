@@ -18,5 +18,6 @@ class PlotTool:
 			plt.plot(t, test, 'g', label="Test Probe")
 		plt.xlabel("Time (s)")
 		plt.ylabel("Aplitude (V)")
+		plt.xlim(0,t[-1])
 		plt.legend()
 		plt.show()

@@ -8,20 +8,22 @@ import easygui
 def main():
 	orden = 10
 	fs, x = wav.read(easygui.fileopenbox())
+	showEstimation = easygui.ynbox('Do you want to see the S filter estimation?', 'S Filter Estimator', ('Yes', 'No'))
 	x = x / 2.0 ** 15  # Normalizo la entrada porque esta como bytes enteros
-	#x = np.array([0.5*np.sin(2*3.142*i * 400/44100.0) for i in range(661500)])
+	print(x[0].shape)
+	if x[0].shape != ():  # Si es estereo solo agarro 1 canal
+		x = x.transpose()[0]
+	# x = np.array([0.5*np.sin(2*3.142*i * 400/44100.0) for i in range(661500)]) # Si le quiero meter una senoidal perfecta.
 	print("Simulation Started")
 
 	sim = Simulation(x, fs, 10)
-	sim.approximateS(1, showEstimation=False)  # 10 Segundos para estimar S
+	sim.approximateS(1, showEstimation=showEstimation)
 	en, test = sim.simulate()
 
 	wav.write("out.wav", fs, np.array(en * 2.0 ** 15, dtype='int16'))
-	wav.write("inp.wav", fs, np.array(x * 2.0 ** 15, dtype='int16'))
-
 	# Ploteo la salida
 	graphics = PlotTool()
-	graphics.plot(x, en, fs)
+	graphics.plot(x, en, fs, test= None)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,3 @@
-import numpy as np
-
-
 class FXLMS:
 	def __init__(self, alpha):
 		self.alpha = alpha
