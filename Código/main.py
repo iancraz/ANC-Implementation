@@ -33,7 +33,11 @@ def main():
 	plotResults = easygui.ynbox('Do you want to plot the ANC Results?', 'Results', ('Yes', 'No'))
 	if plotResults:
 		graphics = PlotTool()
-		graphics.plot(x, en, fs, test= None)
+		showTestProbe = easygui.ynbox('Do you want to show the Test Probe?', 'Results', ('Yes', 'No'))
+		if showTestProbe:
+			graphics.plot(x, en, fs, test=test)
+		else:
+			graphics.plot(x, en, fs, test= None)
 	print("Output from the ANC out.wav has been created.")
 	input("Press Enter to exit...")
 
