@@ -6,8 +6,10 @@ class WienerFilter:
 	def __init__(self, N):  # N es el orden del filtro de wiener
 		self.N = N
 		self.a = np.zeros(N)
-		self.fxlms = FXLMS(1e-2)
+		self.alpha = 1e-1
+		self.fxlms = FXLMS(self.alpha)
 		self.prevValues = np.zeros(N)
+		self.counter = 0
 		return
 
 	def getOutput(self, x):  # Recibe un input de L cantidad de valores
@@ -26,12 +28,15 @@ class WienerFilter:
 					temp = temp - x_tot[n_tot - i] * self.a[i]
 			y[n] = - self.a[0] * x[n] + temp
 		for i in range(self.N):
-			self.prevValues[i] = x[L - 1 - self.N + i]
+			self.prevValues[i] = x[L - self.N + i]
 		return y
 
 	def updateCoefs(self, signal, error_n):
 		# Mando a=[a_0,a_1,a_2,...] y signal=[x(n),x(n-1),...,x(n-N)]
-		self.a = self.fxlms.calcNewCoef(self.a, signal, error_n)
+		if self.alpha > 1e-6:
+			self.a = self.fxlms.calcNewCoef(self.a, signal, error_n, self.alpha)
+
+
 		return
 
 	def update(self, error):
@@ -45,4 +50,11 @@ class WienerFilter:
 			# de coeficientes.
 			# signal = [x(n), x(n-1), ... , x(n-N)]
 			self.updateCoefs(signal, error[n])
+		return
+
+	def updateAlpha(self, decreace):
+		if decreace:
+			self.alpha = self.alpha / 2.0
+		elif self.alpha:
+			self.alpha = self.alpha * 2.0
 		return
