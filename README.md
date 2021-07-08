@@ -40,7 +40,7 @@ In many ANC applications noise signals are periodic. These signals can be genera
 * The possibility of generating reference signals allows to control each harmonic independently.
 * It is only necessary to model the transfer function on frequencies close to that of the harmonics.
 
-[](https://github.com/iancraz/TP4---Investigacion/blob/master/docs/Feedforward/diagrama_narrow.png)
+<img src="https://github.com/iancraz/TP4---Investigacion/blob/master/docs/Feedforward/diagrama_narrow.png?raw=true" width=300 align=center>
 
 A basic diagram of such a system is shown in the previous Figure. The system has a sensor that acts as the trigger of the signal generator. The reference signal generated can be of two types: **1)** a pulse train with period equal to the inverse of the fundamental frequency of the periodic noise and **2)** sine waves with the same frequencies as the harmonics of the periodic noise. To implement the **1)** type the method called wave synthesis is used while for the **2)** type an adaptive notch filter is used. No matter what type of reference signal is generated, it is processed by an adaptive filter and sent to the driver. By means of an error signal the adaptive filter is modified (thanks to different algorithms) to minimize the error. 
 
@@ -50,13 +50,13 @@ The math details of the calculation of the synthesis method can be found in the 
 
 The system is illustrated in following Figure. The system has a reference microphone that takes the input signal, the signal is processed by the ANC system that reproduces a signal in the cancellation speaker. It has an error microphone that modifies the behavior of the adaptive filter to minimize the error of the ANC system. 
 
-[](https://github.com/iancraz/TP4---Investigacion/blob/master/docs/Feedforward/diagrama_broadband.png)
+<img src="https://github.com/iancraz/TP4---Investigacion/blob/master/docs/Feedforward/diagrama_broadband.png?raw=true" width=300 align=center>
 
 The primary path **P(z)** is defined as the acoustic path between the coordinates near the reference microphone and the error microphone. There are also two secondary paths from the cancellation speaker to the reference signal **S_1(z)** on one side and to the error microphone **S_2(z)** on the other side. The adaptive filter **W(z)** is used to estimate **P(z)** to generate a noise cancelling signal.
 
 To clarify the operation of the system, a block diagram of the system, it is illustrated in the following Figure. The error microphone is depicted as the adder module whose input signals are **d(n)** and **y(n)**. The system seeks to modify **W(z)** so that **y(n)** and **-d(n)** have maximum correlation with each other. If this is achieved, when combining both signals, the residual error is **e(n) = d(n) + y(n) = 0** since as they have maximum correlation the output will be white Gaussian noise.
 
-[](https://github.com/iancraz/TP4---Investigacion/blob/master/docs/Feedforward/bloques_broadband.png)
+<img src="https://github.com/iancraz/TP4---Investigacion/blob/master/docs/Feedforward/bloques_broadband.png?raw=true" width=300 align=center>
 
 With this block in mind, one can calculate the transfer function of this system, once again found in the [Paper](https://github.com/iancraz/TP4---Investigacion/blob/master/Paper.pdf) (in Spanish).
 
