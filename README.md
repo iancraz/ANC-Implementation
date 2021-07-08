@@ -62,6 +62,29 @@ With this block in mind, one can calculate the transfer function of this system,
 
 Finalizing the study of this type of systems it is not superfluous to mention the importance of the processing time. After the reference microphone takes the input signal, the system has a certain time to generate the signal from the cancellation speaker. If the time it takes to generate this signal (electronic delay) is longer than the time it takes for the noise to get from the reference microphone to the driver (acoustic delay), the efficiency of the system is severely impaired. This is because the system response is non-causal when the electronic delay is greater than the acoustic delay. When the causality condition is achieved the system is able to suppress random noises. On the contrary, if the causality condition is not achieved, the system can only eliminate periodic noises. As a last clarification note that this system is not limited to periodic noises, this makes it somehow superior to the previous system. That is why this system has more applications than the Narrowband Feedforward system. 
 
+# NarrowBand FeedBack Systems
+>[Table of contents](#table-of-contents)
+
+This section introduces the NarrowBand Feedback systems. A one-channel block diagram of a Feedback system is illustrated in the following Figure. The signal acquired by the error microphone is processed by the adaptive filter to generate a signal at the noise-cancelling driver. This type of system synthesizes its own reference signal based only on the input from the adaptive filter and the error signal. That is why the idea is to estimate the primary noise and use it as a reference for the adaptive filter.
+
+<img src="https://github.com/iancraz/TP4---Investigacion/blob/master/docs/Feedback/diagrama_bloques_1.png?raw=true" width=300 align=center>
+
+<img src="https://github.com/iancraz/TP4---Investigacion/blob/master/docs/Feedback/feedback_diagram1.png?raw=true" width=300 align=center>
+
+# Algorithms
+>[Table of contents](#table-of-contents)
+
+For the implementation of adaptive signal filters, a distinction is made between two categories of algorithms used to minimize the quadratic error between the output and the desired result: those that estimate the filter parameters deterministically and those that do so by means of statistical methods.
+
+The former are characterized by high convergence speeds, but at the same time imply high computational capacity requirements: the recursive least squares method (hereafter RLS) is a prominent example of this category. The latter are based on stochastic methods and therefore require fewer resources: the least mean squares method (LMS) and its variants (NMLS, FX-LMS, etc. are examples of this category).
+
+A brief description of the various relevant algorithms is given in the [Paper](https://github.com/iancraz/TP4---Investigacion/blob/master/Paper.pdf), with emphasis on the stochastic ones, since their computational complexity is relatively low.
+
+# Results
+>[Table of contents](#table-of-contents)
+
+
+
 
 
 
