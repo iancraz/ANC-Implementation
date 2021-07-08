@@ -6,10 +6,10 @@ Nowadays, active noise cancellation is applied in the most diverse contexts, fro
 # Table of contents
 
 * [Introduction](#Introduction)
-* [Dataset](#Dataset)
-* [Quick-Reference](#Quick-Reference)
-* [Training](#Training)
-* [Training](#training)
+* [FeedForward Systems](#FeedForward-Systems)
+* [NarrowBand FeedBack Systems](#NarrowBand-FeedBack-Systems)
+* [Algorithms](#Algorithms)
+* [Results](#Results)
 * [Contact](#Contact)
 * [License](#License)
 
@@ -24,7 +24,7 @@ In this research work, noise is defined as any undesirable sound that you want t
 
 ANC systems can be based on pre-feedback or **feedforward**, where the reference noise is sampled before it propagates to the second source, or on **feedback** where the noise is cancelled without a reference. That is, the signal is sampled after the injection of the canceling wave to correct the cancellation error.  
 
-Within the feedforward systems are **1** the narrowband systems that will be presented in the section [Feedforward](#Feedforward) and **2)** the broadband systems that will be discussed in the section [Feedforward](#Feedforward). On the other hand, within the feedback systems is the adaptive narrowband system which will be introduced in section [FeedBack](#Feedback). 
+Within the feedforward systems are **1** the narrowband systems that will be presented in the section [Feedforward](#Feedforward) and **2)** the broadband systems that will be discussed in the section [FeedForward Systems](#FeedForward-Systems). On the other hand, within the feedback systems is the adaptive narrowband system which will be introduced in section [NarrowBand FeedBack Systems](#NarrowBand-FeedBack-Systems). 
 
 
 # FeedForward Systems
@@ -69,7 +69,7 @@ This section introduces the NarrowBand Feedback systems. A one-channel block dia
 
 <img src="https://github.com/iancraz/TP4---Investigacion/blob/master/docs/Feedback/diagrama_bloques_1.png?raw=true" width=300 align=center>
 
-<img src="https://github.com/iancraz/TP4---Investigacion/blob/master/docs/Feedback/feedback_diagram1.png?raw=true" width=300 align=center>
+<img src="https://github.com/iancraz/ANC-Implementation/blob/master/docs/Feedback/feedback_diagram1.PNG?raw=true" width=300 align=center>
 
 # Algorithms
 >[Table of contents](#table-of-contents)
@@ -83,38 +83,265 @@ A brief description of the various relevant algorithms is given in the [Paper](h
 # Results
 >[Table of contents](#table-of-contents)
 
+To carry out the simulation of a Broadband Feedforward system we assume the following: **1)** the path S_1 is not considered, **2)** the path S_2 is defined beforehand but an estimate of it is made so **hat S_2** or S_2 can be used in the simulation and **3)** the adaptive FX-LMS algorithm discussed in section [Feedforward](#Algorithms) is used.
 
+It should be clarified that all simulations are performed using Python programming code. Some parts of the code are shown below, however, all the code can be found in this [Jupyter Notebook](https://github.com/iancraz/ANC-Implementation/blob/master/C%C3%B3digo%20PASA/Proyecto%201.ipynb).
 
+## LMS Algorithms
 
+First of all we define the **VSNLMS** Algorithm as follows:
 
+```Python
+class VSNLMS:
+	def __init__(self, mu, mu_max, mu_min, m0, m1, alpha, delta=0.0):
+		"""
+		Funcion de inicialización del algoritmo VSNLMS
+		@:param mu: Coeficiente de ajuste de paso inicial
+		@:param mu_max: Maximo valor del coeficiente de paso (Los coeficientes se van ajustando a medida que se hacen
+		iteraciones por el algoritmo VS-LMS)
+		@:param mu_min: Mínimo valor del coeficiente de paso
+		@:param m0_per: Cantidad de valores de gradiente que deben cambiar de signo para que se ajuste el mu. Esta cantidad
+		viene dada porcentualmente del valor de N
+		@:param m1_per: Cantidad de valores de gradiente que deben mantener signo para que se ajuste el mu. Esta cantidad
+		viene dada porcentualmente del valor de N
+		@:param alpha: parametro de ajuste del mu
+		@:param delta: delta del algoritmo NLMS, esta puesto para asegurar que en el caso de que el denominador sea nulo no
+		explote.
+		"""
+		self.mu = mu
+		self.count_mu_values = 0
+		self.mu_max = mu_max
+		self.mu_min = mu_min
+		self.alpha = alpha
+		self.m0 = m0
+		self.m1 = m1
+		self.prev_sign = 0
+		self.delta = delta
+		self.prev_grad = []
+		return
 
+	def calcNewCoef(self, a_n, signal, error):
+		"""
+		Funcion que dados unos coeficientes previos, los actualiza correspondientemente
+		:param a_n: Coeficientes a actualizar
+		:param signal: Vector de señal de entrada
+		:param error: Valor del error para actualizar los coeficientes
+		:return: Vector de coeficientes actualizados formateados de la misma manera que a_n
+		"""
+		grad = np.array(signal) * error
+		if len(self.prev_grad) != 0:
+			if np.sum(np.sign(grad) != self.prev_grad) > self.m0 and self.mu > self.mu_min:
+				self.mu /= self.alpha
+			elif np.sum(np.sign(grad) == self.prev_grad) > self.m1 and self.mu < self.mu_max:
+				self.mu *= self.alpha
+		self.prev_grad = np.sign(grad)
+		return a_n + self.mu * grad / (np.dot(signal, signal) + self.delta)  # NLMS
 
-
-
-
-
-
-
-
-
-
-
-# Quick Reference
->[Table of contents](#table-of-contents)
-
-To run this example, you need to clone this repository:
-
+	def getMu(self):
+		"""
+		Funcion para obtener el mu actual del algoritmo
+		:return: mu actual.
+		"""
+		return self.mu
 ```
-git clone https://github.com/iancraz/Pix2Pix-Image-Colorizer.git
+
+Then once we have created the algorithm to use, we define the adaptative filter:
+
+```Python
+class AdaptativeFilter:
+	def __init__(self, N, mu=1e-3, mu_max=1.1, mu_min=1e-9, m0_per=0.9, m1_per=0.9, alpha=10, delta=0.0):
+		"""
+		Funcion de inicializacion del filtro adaptativo
+		@:param N: Es el orden del filtro
+		@:param mu: Coeficiente de ajuste de paso inicial
+		@:param mu_max: Maximo valor del coeficiente de paso (Los coeficientes se van ajustando a medida que se hacen
+		iteraciones por el algoritmo VS-LMS)
+		@:param mu_min: Mínimo valor del coeficiente de paso
+		@:param m0_per: Cantidad de valores de gradiente que deben cambiar de signo para que se ajuste el mu. Esta cantidad
+		viene dada porcentualmente del valor de N
+		@:param m1_per: Cantidad de valores de gradiente que deben mantener signo para que se ajuste el mu. Esta cantidad
+		viene dada porcentualmente del valor de N
+		@:param alpha: parametro de ajuste del mu
+		@:param delta: delta del algoritmo NLMS, esta puesto para asegurar que en el caso de que el denominador sea nulo no
+		explote.
+		"""
+		self.N = N
+		self.w = np.random.randn(N)
+		self.mu = mu
+		m0 = m0_per * N
+		m1 = m1_per * N
+		self.vsnlms = VSNLMS(self.mu, mu_max, mu_min, m0, m1, alpha, delta)
+		self.inp_signal = list(np.zeros(N))
+		self.err = 1
+		return
+
+	def fit(self, input, desired):
+		"""
+		Funcion que actualiza los pesos de un filtro adaptativo para que se ajusten a la respuesta deseada.
+		@:param input: Vector de entrada al filtro adaptativo
+		@:param desired: Vector de señal deseada del filtro adaptativo.
+		"""
+		self.inp_signal = list(np.zeros(self.N))
+		self.err = 1
+		for x, d in tqdm(zip(input, desired)):
+			self.inp_signal.append(x)
+			self.inp_signal.pop(0)
+			self.err = d - np.dot(self.inp_signal, self.w)  # Esta definido de esta manera
+			self.updateLMS()
+		return
+
+	def getFilterParameters(self):
+		"""
+		Función que devuelve los parámetros del filtro adaptativo
+		@:return Los coeficientes del filtro
+		"""
+		return np.flip(self.w)
+
+	def updateLMS(self):
+		"""
+		Función que actualiza los coeficientes del filtro adaptativo, utiliza los vectores self.inp_signal, sel.w, y el valor
+		self.err
+		"""
+		self.w = self.vsnlms.calcNewCoef(self.w, self.inp_signal, self.err)
+		return
+
+	def getMu(self):
+		"""
+		Devuelve el Mu actual del filtro adaptativo
+		@:return mu Actual
+		"""
+		return self.vsnlms.getMu()
+
+	def applyFilterSame(self, input):
+		"""
+		Aplica el filtro adaptativo obtenido a un vector de entrada
+		@:param input: vector de entrada para aplicar el filtro. (IMPORTANTE: No actualiza self.inp_signal)
+		@:return Vector de salida del filtro.
+		"""
+		return signal.convolve(input, np.flip(self.w), mode="same")  # No esta chequeado que vaya el modo same
+
+	def applyFilterFull(self, input):
+		"""
+		Aplica el filtro adaptativo obtenido a un vector de entrada
+		@:param input: vector de entrada para aplicar el filtro. (IMPORTANTE: No actualiza self.inp_signal)
+		@:return Vector de salida del filtro.
+		"""
+		return signal.convolve(input, np.flip(self.w), mode="full")  # No esta chequeado que vaya el modo same
+
+	def resetInput(self):
+		"""
+		Función que borra los datos de self.inp_signal y los setea todos en cero
+		"""
+		self.inp_signal = list(np.zeros(self.N))
+		return
+
+	def applyFilterToTap(self, tap):
+		"""
+		Funcion que aplica el filtro adaptativo a un solo tap de entrada, utiliza los valores previos guardados en self.inp_signal
+		y actualiza ese vector (IMPORTATNE: Actualiza los valores de self.inp_signal)
+		@:param tap: Valor del tap de entrada a aplicar el filtro
+		@:return Valor de salida del filtro adaptativo
+		"""
+		self.inp_signal.append(tap)
+		self.inp_signal.pop(0)
+		temp = self.applyFilterFull(self.inp_signal)
+		temp2 = temp[self.N - 1]
+		return temp2
+
+	def fitFilterWithErrorTap(self, input_vector, e_tap):
+		"""
+		Funcion que actualiza los valores de los coeficientes del filtro adaptativo dado un tap de señal de error.
+		(IMPORTANTE: La señal self.inp_signal debe estar previamente actualizada al tap de entrada correspondiente a e_tap).
+		@:param input_vector: Vector de entrada al filtro para actualizar los coeficientes
+		@:param e_tap: Es un tap de la señal de error medida.
+		"""
+		self.err = e_tap
+		self.w = self.vsnlms.calcNewCoef(self.w, input_vector, self.err)
+		return
+
+	def fitFilterWithDesired(self,d_tap):
+		"""
+		Funcion que actualiza los coeficientes del filtro con un tap actual de la señal deseada
+		(IMPORTANTE: self.inp_signal debe estar previamente cargada con el tap de entrada actual).
+		:param d_tap: tap de la señal deseada
+		"""
+		self.err = d - np.dot(self.inp_signal, self.w)
+		self.updateLMS()
+		return
+
+	def setInputVector(self, input):
+		"""
+		Funcion que setea el input vector desde afuera.
+		:param input: Vector de input para actualizar el filtro adaptativo
+		"""
+		if len(input) != self.N:
+			raise Exception(f"No coinciden el tamaño del filtro {self.N} con el input vector metido {len(input)}")
+		self.inp_signal = input
+		return
 ```
 
-# Training
->[Table of contents](#table-of-contents)
+And its correspondign Filter class:
 
+```Python
+class Filter:
+	def __init__(self,coefs):
+		"""
+		Funcion para inicializar el filtro con una lista de coeficientes dada
+		:param coefs: Coeficientes del filtro a inicializar deben estar dados de la siguiente manera:
+			[w0,w1,w2,w3,..wN]
+		"""
+		self.coefs = coefs
+		return
 
-<img src="https://github.com/iancraz/Pix2Pix-Image-Colorizer/blob/main/docs/0_0.jpg?raw=true" width=300 align=center>
+	def applyFilter(self, input):
+		"""
+		Funcion para aplicar el filtro a una señal de entrada dada
+		:param input: Vector de señal de entrada, con el valor mas reciente ubicado a derecha, y el valor mas viejo a
+		izquierda.
+		:return: Vector de la señal de salida, filtrada.
+		"""
+		return signal.convolve(input, self.coefs, mode="full")
 
+	def getFilterLen(self):
+		"""
+		Funcion que devuelve la cantidad de parámetros del filtro.
+		:return:
+		"""
+		return len(self.coefs)
 
+	def getCoefs(self):
+		"""
+		Funcion que devuelve una lista con los coeficientes del filtro.
+		:return: Lista con los coeficientes del filtro.
+		"""
+		return self.coefs
+```
+
+In order to perform a simulation of everything discussed above, we must first have the acoustic paths **P(z)** and **S_2(z)**. For this we make use of the Python library `pyroomacoustics` which provides a simple way to simulate our system. For the acoustics path **P(z)** we define it as shown in the following Figure
+
+<img src="https://github.com/iancraz/ANC-Implementation/blob/master/docs/Simulacion/pz.png?raw=true" width=300 align=center>
+
+On the other hand, for the acoustic path **S_2(z)** an attempt is made to mimic a supraural headphone by defining it as shown in the next Figure.
+
+<img src="https://github.com/iancraz/ANC-Implementation/blob/master/docs/Simulacion/s.png?raw=true" width=300 align=center>
+
+First, S_2 is simulated to study the FX-LMS algorithm. For the simulation, the LMS algorithm is used in order to approximate in offline mode as best as possible **S_hat{S_2}(z)** to **S_2(z)**.
+
+The estimation is performed as follows: **1)** place **x(n)** white Gaussian noise at the input of the system in order to best estimate the filter so that there is no predominance at certain frequencies, **2)** define **S_2** as above, and **3)** place an adaptive Wiener filter on **S_2**. When performing the simulation, **S_2** will be gradually modified by minimizing **e(n)**. The simulation is shown in teh next Figure. As can be seen, the error **J_s** becomes smaller and smaller as time goes by, which means that the adaptive filter becomes more and more similar to what it wants to estimate, in this case **S_2**.The whole procedure detailed in this paragraph is what is called offline mode in the [Paper](https://github.com/iancraz/TP4---Investigacion/blob/master/Paper.pdf).
+
+<img src="https://github.com/iancraz/ANC-Implementation/blob/master/docs/Simulacion/js.png?raw=true" width=300 align=center>
+
+Having the estimate **hat S_2** it is possible to simulate the complete system. The test starts with a periodic noise signal. The sound produced in the cockpit of an airplane was selected. The results are shown in the next Figure. The **System input signal** is the signal that is injected to be nulled, in this case it is the ambient cockpit noise, the **Error signal** is the resulting error signal **e(n)** which as stated repeatedly, is expected to tend to 0, and is what the pilot would hear in his ears. As can be seen the system works properly since the signal **e(n)** tends to decrease the sound quickly, and this translates to the adaptive algorithm being quick to modify the adaptive filter, achieving relative silence in the pilot's ears. In the following Figure it can be observed in a random segment of the signal, how the signal generated by the adaptive filter tries to obtain the maximum correlation with respect to the desired inverted signal.
+
+<img src="https://github.com/iancraz/ANC-Implementation/blob/master/docs/Simulacion/plane.png?raw=true" width=300 align=center>
+
+<img src="https://github.com/iancraz/ANC-Implementation/blob/master/docs/Simulacion/plane_desired.png?raw=true" width=300 align=center>
+
+## RLS Algorithms
+
+As with the FX LMS, we first estimated the hat S_2 filter. Finally, we simulated the same environments proposed for the LMS case and arrived at the results shown in the following Figure.
+
+<img src="https://github.com/iancraz/ANC-Implementation/blob/master/docs/Simulacion/airpl_rls.png?raw=true" width=300 align=center>
 
 # Contact
 >[Table of contents](#table-of-contents)
