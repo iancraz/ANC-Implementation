@@ -1,6 +1,6 @@
 # Active Noise Cancelling Implementation
 
-Nowadays, active noise cancellation is applied in the most diverse contexts, from industry to medicine and consumer products. This research work refers to the different noise cancellation systems commonly used. In addition, it analyzes the different adaptive algorithms that can be used for the implementation of these systems. The [Paper](https://github.com/iancraz/TP4---Investigacion/blob/master/Paper.pdf) (in Spanish) emphasizes the Broadband Feedforward cancellation system both in its practical aspects and in its implementation. Its implementation is explored with the FxLMS algorithms and its recursive FxLMS algorithm variant, FxRLS.
+Nowadays, active noise cancellation is applied in the most diverse contexts, from industry to medicine and consumer products. This research work refers to the different noise cancellation systems commonly used. In addition, it analyzes the different adaptive algorithms that can be used for the implementation of these systems. The [Paper](https://github.com/iancraz/ANC-Implementation/blob/master/Paper%20English.pdf) emphasizes the Broadband Feedforward cancellation system both in its practical aspects and in its implementation. Its implementation is explored with the FxLMS algorithms and its recursive FxLMS algorithm variant, FxRLS.
 
 
 # Table of contents
@@ -44,7 +44,7 @@ In many ANC applications noise signals are periodic. These signals can be genera
 
 A basic diagram of such a system is shown in the previous Figure. The system has a sensor that acts as the trigger of the signal generator. The reference signal generated can be of two types: **1)** a pulse train with period equal to the inverse of the fundamental frequency of the periodic noise and **2)** sine waves with the same frequencies as the harmonics of the periodic noise. To implement the **1)** type the method called wave synthesis is used while for the **2)** type an adaptive notch filter is used. No matter what type of reference signal is generated, it is processed by an adaptive filter and sent to the driver. By means of an error signal the adaptive filter is modified (thanks to different algorithms) to minimize the error. 
 
-The math details of the calculation of the synthesis method can be found in the [Paper](https://github.com/iancraz/TP4---Investigacion/blob/master/Paper.pdf) (in Spanish).
+The math details of the calculation of the synthesis method can be found in the [Paper](https://github.com/iancraz/ANC-Implementation/blob/master/Paper%20English.pdf).
 
 ## Broadband FeedForward
 
@@ -58,7 +58,7 @@ To clarify the operation of the system, a block diagram of the system, it is ill
 
 <img src="https://github.com/iancraz/TP4---Investigacion/blob/master/docs/Feedforward/bloques_broadband.png?raw=true" width=300 align=center>
 
-With this block in mind, one can calculate the transfer function of this system, once again found in the [Paper](https://github.com/iancraz/TP4---Investigacion/blob/master/Paper.pdf) (in Spanish).
+With this block in mind, one can calculate the transfer function of this system, once again found in the [Paper](https://github.com/iancraz/ANC-Implementation/blob/master/Paper%20English.pdf).
 
 Finalizing the study of this type of systems it is not superfluous to mention the importance of the processing time. After the reference microphone takes the input signal, the system has a certain time to generate the signal from the cancellation speaker. If the time it takes to generate this signal (electronic delay) is longer than the time it takes for the noise to get from the reference microphone to the driver (acoustic delay), the efficiency of the system is severely impaired. This is because the system response is non-causal when the electronic delay is greater than the acoustic delay. When the causality condition is achieved the system is able to suppress random noises. On the contrary, if the causality condition is not achieved, the system can only eliminate periodic noises. As a last clarification note that this system is not limited to periodic noises, this makes it somehow superior to the previous system. That is why this system has more applications than the Narrowband Feedforward system. 
 
@@ -78,7 +78,7 @@ For the implementation of adaptive signal filters, a distinction is made between
 
 The former are characterized by high convergence speeds, but at the same time imply high computational capacity requirements: the recursive least squares method (hereafter RLS) is a prominent example of this category. The latter are based on stochastic methods and therefore require fewer resources: the least mean squares method (LMS) and its variants (NMLS, FX-LMS, etc. are examples of this category).
 
-A brief description of the various relevant algorithms is given in the [Paper](https://github.com/iancraz/TP4---Investigacion/blob/master/Paper.pdf), with emphasis on the stochastic ones, since their computational complexity is relatively low.
+A brief description of the various relevant algorithms is given in the [Paper](https://github.com/iancraz/ANC-Implementation/blob/master/Paper%20English.pdf), with emphasis on the stochastic ones, since their computational complexity is relatively low.
 
 # Results
 >[Table of contents](#table-of-contents)
@@ -327,7 +327,7 @@ On the other hand, for the acoustic path **S_2(z)** an attempt is made to mimic 
 
 First, S_2 is simulated to study the FX-LMS algorithm. For the simulation, the LMS algorithm is used in order to approximate in offline mode as best as possible **S_hat{S_2}(z)** to **S_2(z)**.
 
-The estimation is performed as follows: **1)** place **x(n)** white Gaussian noise at the input of the system in order to best estimate the filter so that there is no predominance at certain frequencies, **2)** define **S_2** as above, and **3)** place an adaptive Wiener filter on **S_2**. When performing the simulation, **S_2** will be gradually modified by minimizing **e(n)**. The simulation is shown in teh next Figure. As can be seen, the error **J_s** becomes smaller and smaller as time goes by, which means that the adaptive filter becomes more and more similar to what it wants to estimate, in this case **S_2**.The whole procedure detailed in this paragraph is what is called offline mode in the [Paper](https://github.com/iancraz/TP4---Investigacion/blob/master/Paper.pdf).
+The estimation is performed as follows: **1)** place **x(n)** white Gaussian noise at the input of the system in order to best estimate the filter so that there is no predominance at certain frequencies, **2)** define **S_2** as above, and **3)** place an adaptive Wiener filter on **S_2**. When performing the simulation, **S_2** will be gradually modified by minimizing **e(n)**. The simulation is shown in teh next Figure. As can be seen, the error **J_s** becomes smaller and smaller as time goes by, which means that the adaptive filter becomes more and more similar to what it wants to estimate, in this case **S_2**.The whole procedure detailed in this paragraph is what is called offline mode in the [Paper](https://github.com/iancraz/ANC-Implementation/blob/master/Paper%20English.pdf).
 
 <img src="https://github.com/iancraz/ANC-Implementation/blob/master/docs/Simulacion/js.png?raw=true" width=300 align=center>
 
